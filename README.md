@@ -39,7 +39,7 @@ The Adhan Applet is a cross-platform desktop application built using Electron.js
 
 The project follows a clean and organized structure to separate concerns and maintain readability:
 
-\`\`\`plaintext
+```plaintext
 adhan-applet/
 ├── assets/                               # Contains Adhan MP3 files used for playback
 │   └── fajr.mp3
@@ -64,19 +64,19 @@ adhan-applet/
 ├── .gitignore                            # Git ignore file to exclude node_modules, etc.
 ├── .eslintrc                             # ESLint configuration for code quality and style
 └── README.md                             # Documentation file for the project
-\`\`\`
+```
 
 ### Folder Structure Explanation
-- **`assets/`**: This folder stores all the Adhan MP3 files that are used for audio playback. You can add, update, or remove Adhan files as needed.
+- **`assets`**: This folder stores all the Adhan MP3 files that are used for audio playback. You can add, update, or remove Adhan files as needed.
 
-- **`src/`**: This folder contains the core source files for the app, divided into subfolders:
-  - **`api/`**: Handles all API-related logic, including fetching prayer times from external services.
-  - **`components/`**: Contains scripts that manage specific UI components, such as the settings page.
-  - **`utils/`**: Includes utility scripts for scheduling, configuration management, and helper functions.
+- **`src`**: This folder contains the core source files for the app, divided into subfolders:
+  - **`api`**: Handles all API-related logic, including fetching prayer times from external services.
+  - **`components`**: Contains scripts that manage specific UI components, such as the settings page.
+  - **`utils`**: Includes utility scripts for scheduling, configuration management, and helper functions.
   - **`mainAppRenderer.js`**: Handles the main rendering logic and UI interactions of the app.
   - **`electronMainProcess.js`**: Contains the main process logic for Electron, including window management and inter-process communication.
 
-- **`ui/`**: This folder stores the HTML and CSS files for the app's user interface. All front-end layout and style changes should be made here.
+- **`ui`**: This folder stores the HTML and CSS files for the app's user interface. All front-end layout and style changes should be made here.
 
 - **Root Files**:
   - **`package.json`**: Lists all project dependencies and scripts for running and building the app.
