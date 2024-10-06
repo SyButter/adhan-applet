@@ -1,7 +1,21 @@
 {
+  "name": "adhan-applet",
+  "version": "1.0.0",
+  "description": "An Electron-based Adhan timer app.",
+  "main": "src/electronMainProcess.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --enable-logging",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
-    "electron": "^32.1.2",
-    "eslint": "^9.11.1",
-    "howler": "^2.2.4"
-  }
+    "adhan-applet": "file:",
+    "axios": "^0.21.4",
+    "howler": "^2.2.1"
+  },
+  "devDependencies": {
+    "electron": "^13.6.9"
+  },
+  "author": "Syed B",
+  "license": "MIT"
 }
