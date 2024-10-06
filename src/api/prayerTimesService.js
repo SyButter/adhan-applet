@@ -1,30 +1,32 @@
-// src/api/prayerTimesAPI.js
+// src/api/prayerTimesService.js
+
 const axios = require('axios');
 
 /**
- * Fetch prayer times based on user location and calculation method.
- * @param {Object} options - Options for fetching prayer times.
- * @param {number} options.latitude - Latitude of the location.
- * @param {number} options.longitude - Longitude of the location.
- * @param {string} options.method - Calculation method (e.g., "ISNA").
- * @param {number} options.fajrAngle - Custom Fajr angle (optional).
- * @param {number} options.ishaAngle - Custom Isha angle (optional).
- * @returns {Promise<Object>} - A promise that resolves to the prayer times.
+ * Fetch prayer times based on location and calculation method.
+ * @param {Object} config - Configuration object for fetching prayer times.
+ * @param {number} config.latitude - Latitude of the user's location.
+ * @param {number} config.longitude - Longitude of the user's location.
+ * @param {string} config.method - Calculation method (e.g., "ISNA", "Umm al-Qura").
+ * @param {number} [config.fajrAngle] - Optional custom Fajr angle.
+ * @param {number} [config.ishaAngle] - Optional custom Isha angle.
+ * @returns {Promise<Object>} - Returns a promise resolving to the prayer times.
  */
 const fetchPrayerTimes = async ({ latitude, longitude, method, fajrAngle, ishaAngle }) => {
   try {
-    // Construct the Aladhan API URL with the provided parameters.
-    const url = `https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=${method}&fajr=${fajrAngle}&isha=${ishaAngle}`;
+    let url = `https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=${method}`;
     
-    // Make the API request using axios.
-    const response = await axios.get(url);
+    if (fajrAngle) url += `&fajr=${fajrAngle}`;
+    if (ishaAngle) url += `&isha=${ishaAngle}`;
 
-    // Return the timings from the API response.
-    return response.data.data.timings;
+    const response = await axios.get(url);
+    const prayerTimes = response.data.data.timings;
+    return prayerTimes;
   } catch (error) {
-    console.error('Error fetching prayer times:', error);
-    throw error;
+    console.error("Error in fetchPrayerTimes:", error.message);
+    throw new Error("Failed to fetch prayer times. " + error.message);
   }
 };
 
+// Export fetchPrayerTimes so it can be used in other files
 module.exports = { fetchPrayerTimes };
