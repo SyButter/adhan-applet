@@ -1,34 +1,6 @@
 const path = require('path');
-const axios = require('axios'); // Make sure axios is installed (`npm install axios`)
-
-// Use the path to fetch the service
 const { fetchPrayerTimes } = require(path.resolve(process.cwd(), 'src/api/prayerTimesService.js'));
-
-// Function to convert 24-hour time format to 12-hour format with AM/PM
-function convertTo12HourFormat(time) {
-  const [hours, minutes] = time.split(':').map(Number);
-  const suffix = hours >= 12 ? 'PM' : 'AM';
-  const adjustedHours = hours % 12 || 12; // Convert '0' or '12' hours to 12 in 12-hour format
-  return `${adjustedHours}:${minutes < 10 ? '0' + minutes : minutes} ${suffix}`;
-}
-
-// Function to get user input and fetch latitude and longitude based on zip code
-async function getLatLongFromZip(zipcode) {
-  try {
-    const response = await axios.get(`https://api.zippopotam.us/us/${zipcode}`);
-    if (response.data && response.data.places && response.data.places.length > 0) {
-      const place = response.data.places[0];
-      const latitude = parseFloat(place.latitude);
-      const longitude = parseFloat(place.longitude);
-      return { latitude, longitude };
-    } else {
-      throw new Error("Invalid zip code or no data found.");
-    }
-  } catch (error) {
-    console.error("Error occurred while fetching latitude and longitude:", error.message);
-    throw new Error("Failed to fetch location data for the given zip code.");
-  }
-}
+const { getLatLongFromZip, convertTo12HourFormat } = require(path.resolve(process.cwd(), 'src/utils/helperMethods.js'));
 
 // Function to get user input and fetch prayer times
 async function getPrayerTimes() {
