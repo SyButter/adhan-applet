@@ -2,8 +2,7 @@
   "name": "adhan-applet",
   "version": "1.0.0",
   "description": "An Electron-based Adhan timer app.",
-  "main": "src/index.cjs",
-  "type": "module",
+  "main": "src/electronMainProcess.js",
   "scripts": {
     "start": "electron .",
     "dev": "electron . --enable-logging",

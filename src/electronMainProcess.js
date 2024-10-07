@@ -1,6 +1,6 @@
-const { app, BrowserWindow, dialog, ipcMain } = require('electron');
-const path = require('path');
-const fs = require('fs');
+const { app, BrowserWindow, dialog, ipcMain } = require("electron");
+const path = require("path");
+const fs = require("fs");
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -13,20 +13,20 @@ function createWindow() {
     },
   });
 
-  mainWindow.loadFile(path.join(__dirname, '../ui/index.html'));
+  mainWindow.loadFile(path.join(__dirname, "../ui/index.html"));
 }
 
 // Handle folder selection
-ipcMain.handle('select-folder', async () => {
+ipcMain.handle("select-folder", async () => {
   const result = await dialog.showOpenDialog({
-    properties: ['openDirectory']
+    properties: ["openDirectory"]
   });
   return result.filePaths[0];
 });
 
 // Get reciter folders from assets/adhans
-ipcMain.handle('get-reciter-list', () => {
-  const adhansPath = path.join(__dirname, '../assets/adhans');
+ipcMain.handle("get-reciter-list", () => {
+  const adhansPath = path.join(__dirname, "../assets/adhans");
   const reciters = fs.readdirSync(adhansPath, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory()) // Only keep directories
     .map(dirent => dirent.name);
@@ -35,10 +35,10 @@ ipcMain.handle('get-reciter-list', () => {
 
 app.whenReady().then(createWindow);
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") app.quit();
 });
 
-app.on('activate', () => {
+app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });

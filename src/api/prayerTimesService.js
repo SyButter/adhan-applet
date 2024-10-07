@@ -1,6 +1,6 @@
 // src/api/prayerTimesService.js
 
-const axios = require('axios');
+const axios = require("axios");
 
 /**
  * Fetch prayer times based on location, calculation method, and custom angles.
@@ -18,7 +18,7 @@ function fetchPrayerTimes(config) {
 
   // If custom Fajr and Isha angles are provided, set the method to 99 (Custom) and add methodSettings
   if (config.fajrAngle || config.ishaAngle) {
-    url += `&method=99&methodSettings=${config.fajrAngle || 'null'},null,${config.ishaAngle || 'null'}`;
+    url += `&method=99&methodSettings=${config.fajrAngle || "null"},null,${config.ishaAngle || "null"}`;
   }
 
   // Print out the constructed URL for debugging purposes
