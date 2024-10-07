@@ -47,17 +47,29 @@ class PrayerTimesHelper {
     return `${adjustedHours}:${adjustedMinutes}`;
   }
 
-  /**
-   * Get formatted prayer times based on user inputs and offsets.
+   /**
+   * Get formatted prayer times based on user inputs, offsets, and angles.
    * @param {string} zipcode - The user's zipcode.
    * @param {string} method - Calculation method for prayer times.
    * @param {string} timeFormat - Time format (24-hour or 12-hour).
    * @param {Object} offsets - Offsets for each prayer time.
+   * @param {Object} config - Optional configuration with custom Fajr and Isha angles.
    * @returns {Promise<Object>} - Returns formatted prayer times with offsets applied.
    */
-  async getFormattedPrayerTimes(zipcode, method, timeFormat, offsets) {
+   async getFormattedPrayerTimes(zipcode, method, timeFormat, offsets, config = {}) {
     const { latitude, longitude } = await this.getLatLongFromZip(zipcode);
-    const timings = await fetchPrayerTimes({ latitude, longitude, method });
+    
+    // Use custom method (99) if Fajr or Isha angles are provided
+    const apiMethod = (config.fajrAngle || config.ishaAngle) ? 99 : method;
+
+    // Include the custom Fajr and Isha angles in the API call if provided
+    const timings = await fetchPrayerTimes({
+      latitude,
+      longitude,
+      method: apiMethod,
+      fajrAngle: config.fajrAngle,
+      ishaAngle: config.ishaAngle,
+    });
 
     if (timings) {
       const formattedTimings = {};
@@ -70,6 +82,7 @@ class PrayerTimesHelper {
     }
     throw new Error("Failed to fetch prayer times");
   }
+
 
   /**
    * Start a timer to check for prayer times.

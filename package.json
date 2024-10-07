@@ -6,7 +6,8 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron . --enable-logging",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint 'src/**/*.js' --fix"
   },
   "dependencies": {
     "adhan-applet": "file:",
@@ -14,7 +15,11 @@
     "howler": "^2.2.1"
   },
   "devDependencies": {
-    "electron": "^13.6.9"
+    "@eslint/js": "^9.12.0",
+    "electron": "^13.6.9",
+    "eslint": "^9.12.0",
+    "eslint-plugin-react": "^7.37.1",
+    "globals": "^15.10.0"
   },
   "author": "Syed B",
   "license": "MIT"

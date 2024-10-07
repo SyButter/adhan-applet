@@ -46,6 +46,7 @@
             <option value="ISNA">ISNA</option>
             <option value="Umm al-Qura">Umm al-Qura</option>
             <option value="Egypt">Egypt</option>
+            <option value="Custom">Custom</option> <!-- Custom option added -->
         </select>
         <br>
 
@@ -64,9 +65,9 @@
         </select>
         <br>
 
-        <!-- Collapsible Button for Prayer Timing Offsets -->
+        <!-- Collapsible Button for Prayer Timing Offsets and Angle Settings -->
         <button class="collapsible">Prayer Timing Offsets and Angle Settings</button>
-        <div class="content">
+        <div class="content" id="offset-settings">
             <h3>Prayer Timing Offset (in minutes)</h3>
             <label for="fajr-offset">Fajr:</label>
             <input type="number" id="fajr-offset" value="0" min="-60" max="60">
@@ -120,13 +121,22 @@
     <script>
         // Collapsible dropdown functionality
         const coll = document.querySelector('.collapsible');
+        const offsetSettings = document.getElementById('offset-settings');
+
         coll.addEventListener('click', function() {
             this.classList.toggle('active');
-            const content = this.nextElementSibling;
-            if (content.style.display === "block") {
-                content.style.display = "none";
+            offsetSettings.style.display = offsetSettings.style.display === "block" ? "none" : "block";
+        });
+
+        // Show or hide offset and angle settings based on method selection
+        const methodSelect = document.getElementById('method');
+        methodSelect.addEventListener('change', function() {
+            if (methodSelect.value === 'Custom') {
+                offsetSettings.style.display = 'block'; // Show offsets and angle settings
+                coll.classList.add('active');
             } else {
-                content.style.display = "block";
+                offsetSettings.style.display = 'none'; // Hide offsets and angle settings
+                coll.classList.remove('active');
             }
         });
 
@@ -137,19 +147,11 @@
         const ishaCustomInput = document.getElementById('isha-angle-custom');
 
         fajrAngleSelect.addEventListener('change', function() {
-            if (this.value === 'custom') {
-                fajrCustomInput.style.display = 'inline';
-            } else {
-                fajrCustomInput.style.display = 'none';
-            }
+            fajrCustomInput.style.display = this.value === 'custom' ? 'inline' : 'none';
         });
 
         ishaAngleSelect.addEventListener('change', function() {
-            if (this.value === 'custom') {
-                ishaCustomInput.style.display = 'inline';
-            } else {
-                ishaCustomInput.style.display = 'none';
-            }
+            ishaCustomInput.style.display = this.value === 'custom' ? 'inline' : 'none';
         });
     </script>
 </body>
