@@ -1,5 +1,3 @@
-<!-- ui/index.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,26 +5,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adhan Applet</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Styles for the collapsible section */
+        .collapsible {
+            background-color: #f1f1f1;
+            color: #333;
+            cursor: pointer;
+            padding: 10px;
+            border: none;
+            width: 100%;
+            text-align: left;
+            outline: none;
+            font-size: 18px;
+        }
+        .active, .collapsible:hover {
+            background-color: #ddd;
+        }
+        .content {
+            padding: 0 15px;
+            display: none;
+            overflow: hidden;
+            background-color: #f9f9f9;
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 <body>
+    <h1>Adhan Applet</h1>
     <div id="config-section">
         <h3>Configure Prayer Time Settings</h3>
+        
+        <!-- Zip Code Input -->
         <label for="zipcode">Zip Code:</label>
         <input type="text" id="zipcode" placeholder="Enter zip code">
         <br>
+
+        <!-- Calculation Method Dropdown -->
         <label for="method">Calculation Method:</label>
         <select id="method">
             <option value="ISNA">ISNA</option>
             <option value="Umm al-Qura">Umm al-Qura</option>
             <option value="Egypt">Egypt</option>
+            <option value="Custom">Custom</option> <!-- Custom option added -->
         </select>
         <br>
+
+        <!-- Time Format Dropdown -->
         <label for="time-format">Time Format:</label>
         <select id="time-format">
             <option value="24-hour">24-Hour</option>
             <option value="12-hour">12-Hour (AM/PM)</option>
         </select>
         <br>
+
+        <!-- Reciter Dropdown -->
+        <label for="reciter-dropdown">Select Reciter:</label>
+        <select id="reciter-dropdown">
+            <!-- Reciter options will be populated dynamically -->
+        </select>
+        <br>
+
+        <!-- Collapsible Button for Prayer Timing Offsets and Angle Settings -->
+        <button class="collapsible">Prayer Timing Offsets and Angle Settings</button>
+        <div class="content" id="offset-settings">
+            <h3>Prayer Timing Offset (in minutes)</h3>
+            <label for="fajr-offset">Fajr:</label>
+            <input type="number" id="fajr-offset" value="0" min="-60" max="60">
+            <br>
+            <label for="dhuhr-offset">Dhuhr:</label>
+            <input type="number" id="dhuhr-offset" value="0" min="-60" max="60">
+            <br>
+            <label for="asr-offset">Asr:</label>
+            <input type="number" id="asr-offset" value="0" min="-60" max="60">
+            <br>
+            <label for="maghrib-offset">Maghrib:</label>
+            <input type="number" id="maghrib-offset" value="0" min="-60" max="60">
+            <br>
+            <label for="isha-offset">Isha:</label>
+            <input type="number" id="isha-offset" value="0" min="-60" max="60">
+            <br>
+
+            <!-- Angle Settings for Fajr and Isha -->
+            <h3>Angle Settings for Fajr and Isha</h3>
+            <label for="fajr-angle">Fajr Angle:</label>
+            <select id="fajr-angle">
+                <option value="18">18°</option>
+                <option value="15">15°</option>
+                <option value="custom">Custom</option>
+            </select>
+            <input type="number" id="fajr-angle-custom" placeholder="Enter custom Fajr angle" style="display:none;">
+            <br>
+            <label for="isha-angle">Isha Angle:</label>
+            <select id="isha-angle">
+                <option value="18">18°</option>
+                <option value="15">15°</option>
+                <option value="custom">Custom</option>
+            </select>
+            <input type="number" id="isha-angle-custom" placeholder="Enter custom Isha angle" style="display:none;">
+        </div>
+
+        <!-- Get Prayer Times Button -->
         <button id="get-prayer-times-button">Get Prayer Times</button>
     </div>
 
@@ -39,6 +117,42 @@
         <p>Isha: <span id="isha-time">--:--</span></p>
     </div>
 
-    <script src="../src/mainAppRenderer.js"></script> <!-- Ensure the script is linked correctly -->
+    <script src="../src/mainAppRenderer.js"></script>
+    <script>
+        // Collapsible dropdown functionality
+        const coll = document.querySelector('.collapsible');
+        const offsetSettings = document.getElementById('offset-settings');
+
+        coll.addEventListener('click', function() {
+            this.classList.toggle('active');
+            offsetSettings.style.display = offsetSettings.style.display === "block" ? "none" : "block";
+        });
+
+        // Show or hide offset and angle settings based on method selection
+        const methodSelect = document.getElementById('method');
+        methodSelect.addEventListener('change', function() {
+            if (methodSelect.value === 'Custom') {
+                offsetSettings.style.display = 'block'; // Show offsets and angle settings
+                coll.classList.add('active');
+            } else {
+                offsetSettings.style.display = 'none'; // Hide offsets and angle settings
+                coll.classList.remove('active');
+            }
+        });
+
+        // Handle custom angle inputs
+        const fajrAngleSelect = document.getElementById('fajr-angle');
+        const ishaAngleSelect = document.getElementById('isha-angle');
+        const fajrCustomInput = document.getElementById('fajr-angle-custom');
+        const ishaCustomInput = document.getElementById('isha-angle-custom');
+
+        fajrAngleSelect.addEventListener('change', function() {
+            fajrCustomInput.style.display = this.value === 'custom' ? 'inline' : 'none';
+        });
+
+        ishaAngleSelect.addEventListener('change', function() {
+            ishaCustomInput.style.display = this.value === 'custom' ? 'inline' : 'none';
+        });
+    </script>
 </body>
 </html>

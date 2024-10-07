@@ -1,77 +1,90 @@
-const path = require('path');
-const axios = require('axios'); // Make sure axios is installed (`npm install axios`)
+const { ipcRenderer } = require('electron');
+const PrayerTimesHelper = require('../src/utils/prayerTimesHelper');
+const AudioHelper = require('../src/utils/audioHelper');
 
-// Use the path to fetch the service
-const { fetchPrayerTimes } = require(path.resolve(process.cwd(), 'src/api/prayerTimesService.js'));
+// Create instances of the helper classes
+const prayerTimesHelper = new PrayerTimesHelper();
+const audioHelper = new AudioHelper();
 
-// Function to convert 24-hour time format to 12-hour format with AM/PM
-function convertTo12HourFormat(time) {
-  const [hours, minutes] = time.split(':').map(Number);
-  const suffix = hours >= 12 ? 'PM' : 'AM';
-  const adjustedHours = hours % 12 || 12; // Convert '0' or '12' hours to 12 in 12-hour format
-  return `${adjustedHours}:${minutes < 10 ? '0' + minutes : minutes} ${suffix}`;
-}
+let selectedReciter = ''; // Variable to store the selected reciter
+let prayerTimings = {}; // Store fetched prayer timings
 
-// Function to get user input and fetch latitude and longitude based on zip code
-async function getLatLongFromZip(zipcode) {
-  try {
-    const response = await axios.get(`https://api.zippopotam.us/us/${zipcode}`);
-    if (response.data && response.data.places && response.data.places.length > 0) {
-      const place = response.data.places[0];
-      const latitude = parseFloat(place.latitude);
-      const longitude = parseFloat(place.longitude);
-      return { latitude, longitude };
-    } else {
-      throw new Error("Invalid zip code or no data found.");
-    }
-  } catch (error) {
-    console.error("Error occurred while fetching latitude and longitude:", error.message);
-    throw new Error("Failed to fetch location data for the given zip code.");
-  }
+// Function to populate reciter dropdown
+async function populateReciterDropdown() {
+  const reciters = await ipcRenderer.invoke('get-reciter-list');
+  const reciterDropdown = document.getElementById('reciter-dropdown');
+
+  reciterDropdown.innerHTML = '';
+  reciters.forEach(reciter => {
+    const option = document.createElement('option');
+    option.value = reciter;
+    option.textContent = reciter;
+    reciterDropdown.appendChild(option);
+  });
+
+  selectedReciter = reciterDropdown.value;
 }
 
 // Function to get user input and fetch prayer times
 async function getPrayerTimes() {
   try {
-    console.log("getPrayerTimes function called!");
-
-    // Retrieve user inputs from UI elements
     const zipcode = document.getElementById('zipcode').value.trim();
     const method = document.getElementById('method').value || "ISNA";
-    const timeFormat = document.getElementById('time-format').value || "24-hour"; // Get selected time format
+    const timeFormat = document.getElementById('time-format').value || "24-hour";
 
-    // Log user inputs to verify correct values
-    console.log(`Zip Code: ${zipcode}, Method: ${method}, Time Format: ${timeFormat}`);
+    // Get offsets from the input fields
+    const offsets = {
+      Fajr: parseInt(document.getElementById('fajr-offset').value, 10),
+      Dhuhr: parseInt(document.getElementById('dhuhr-offset').value, 10),
+      Asr: parseInt(document.getElementById('asr-offset').value, 10),
+      Maghrib: parseInt(document.getElementById('maghrib-offset').value, 10),
+      Isha: parseInt(document.getElementById('isha-offset').value, 10),
+    };
 
-    // Fetch latitude and longitude based on the zip code
-    const { latitude, longitude } = await getLatLongFromZip(zipcode);
-    console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+    // Get Fajr and Isha angle values
+    let fajrAngle = document.getElementById('fajr-angle').value;
+    let ishaAngle = document.getElementById('isha-angle').value;
 
-    // Call the fetchPrayerTimes function with user inputs
-    const timings = await fetchPrayerTimes({ latitude, longitude, method });
-    console.log("Received Prayer Times:", timings); // Show the received timings
-
-    // Check if the timings object is populated
-    if (timings) {
-      // Format prayer times based on the selected time format
-      const formattedTimings = {};
-      for (const [prayer, time] of Object.entries(timings)) {
-        formattedTimings[prayer] = timeFormat === "12-hour" ? convertTo12HourFormat(time) : time;
-      }
-
-      // Update UI elements with the formatted prayer times
-      document.getElementById('fajr-time').textContent = formattedTimings.Fajr;
-      document.getElementById('dhuhr-time').textContent = formattedTimings.Dhuhr;
-      document.getElementById('asr-time').textContent = formattedTimings.Asr;
-      document.getElementById('maghrib-time').textContent = formattedTimings.Maghrib;
-      document.getElementById('isha-time').textContent = formattedTimings.Isha;
-    } else {
-      console.log("No prayer timings received.");
+    // Check for custom angle values
+    if (fajrAngle === 'custom') {
+      fajrAngle = parseFloat(document.getElementById('fajr-angle-custom').value);
     }
+    if (ishaAngle === 'custom') {
+      ishaAngle = parseFloat(document.getElementById('isha-angle-custom').value);
+    }
+
+    // Prepare config with angles if provided
+    const config = {
+      method,
+      fajrAngle: isNaN(fajrAngle) ? undefined : fajrAngle,
+      ishaAngle: isNaN(ishaAngle) ? undefined : ishaAngle,
+    };
+
+    // Get the formatted prayer times using the PrayerTimesHelper class
+    const timings = await prayerTimesHelper.getFormattedPrayerTimes(zipcode, method, timeFormat, offsets, config);
+    console.log("Received Prayer Times:", timings);
+
+    prayerTimings = timings;
+    document.getElementById('fajr-time').textContent = timings.Fajr;
+    document.getElementById('dhuhr-time').textContent = timings.Dhuhr;
+    document.getElementById('asr-time').textContent = timings.Asr;
+    document.getElementById('maghrib-time').textContent = timings.Maghrib;
+    document.getElementById('isha-time').textContent = timings.Isha;
+
+    // Start the timer to check for prayer times
+    prayerTimesHelper.startPrayerTimer(prayerTimings, (prayer) => audioHelper.playAudio(prayer, selectedReciter));
   } catch (error) {
     console.error("Error occurred while fetching prayer times:", error.message);
   }
 }
 
-// Add event listener to the button to call getPrayerTimes() on click
+// Event listener for dropdown changes
+document.getElementById('reciter-dropdown').addEventListener('change', (event) => {
+  selectedReciter = event.target.value;
+});
+
+// Populate reciter dropdown on page load
+populateReciterDropdown();
+
+// Event listener for "Get Prayer Times" button
 document.getElementById('get-prayer-times-button').addEventListener('click', getPrayerTimes);
