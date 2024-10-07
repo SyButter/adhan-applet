@@ -1,5 +1,3 @@
-<!-- ui/index.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,9 +7,8 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <h1>Adhan Applet</h1>
     <div id="config-section">
-      <button id="select-audio-folder-button">Select Audio Folder</button>
-
         <h3>Configure Prayer Time Settings</h3>
         <label for="zipcode">Zip Code:</label>
         <input type="text" id="zipcode" placeholder="Enter zip code">
@@ -29,6 +26,11 @@
             <option value="12-hour">12-Hour (AM/PM)</option>
         </select>
         <br>
+        <label for="reciter-dropdown">Select Reciter:</label>
+        <select id="reciter-dropdown">
+            <!-- Reciter options will be populated dynamically -->
+        </select>
+        <br>
         <button id="get-prayer-times-button">Get Prayer Times</button>
     </div>
 
@@ -41,6 +43,6 @@
         <p>Isha: <span id="isha-time">--:--</span></p>
     </div>
 
-    <script src="../src/mainAppRenderer.js"></script> <!-- Ensure the script is linked correctly -->
+    <script src="../src/mainAppRenderer.js"></script>
 </body>
 </html>
