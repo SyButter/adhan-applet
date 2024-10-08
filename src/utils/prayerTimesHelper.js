@@ -1,15 +1,15 @@
-const axios = require('axios');
-const { fetchPrayerTimes } = require('../api/prayerTimesService');
+const axios = require("axios");
+const { fetchPrayerTimes } = require("../api/prayerTimesService");
 
 class PrayerTimesHelper {
   /**
    * Convert 24-hour time format to 12-hour format with AM/PM.
    */
   convertTo12HourFormat(time) {
-    const [hours, minutes] = time.split(':').map(Number);
-    const suffix = hours >= 12 ? 'PM' : 'AM';
+    const [hours, minutes] = time.split(":").map(Number);
+    const suffix = hours >= 12 ? "PM" : "AM";
     const adjustedHours = hours % 12 || 12;
-    return `${adjustedHours}:${minutes < 10 ? '0' + minutes : minutes} ${suffix}`;
+    return `${adjustedHours}:${minutes < 10 ? "0" + minutes : minutes} ${suffix}`;
   }
 
   /**
@@ -37,13 +37,13 @@ class PrayerTimesHelper {
    * @returns {string} - Adjusted time in "HH:mm" format.
    */
   adjustTimeByOffset(time, offset) {
-    const [hours, minutes] = time.split(':').map(Number);
+    const [hours, minutes] = time.split(":").map(Number);
     const date = new Date();
     date.setHours(hours);
     date.setMinutes(minutes + offset); // Apply the offset in minutes
 
-    const adjustedHours = date.getHours().toString().padStart(2, '0');
-    const adjustedMinutes = date.getMinutes().toString().padStart(2, '0');
+    const adjustedHours = date.getHours().toString().padStart(2, "0");
+    const adjustedMinutes = date.getMinutes().toString().padStart(2, "0");
     return `${adjustedHours}:${adjustedMinutes}`;
   }
 
@@ -92,16 +92,15 @@ class PrayerTimesHelper {
   startPrayerTimer(prayerTimings, playAudio) {
     setInterval(() => {
       const currentTime = new Date();
-      const currentHourMinute = `${currentTime.getHours()}:${currentTime.getMinutes()}`;
 
       for (const [prayer, time] of Object.entries(prayerTimings)) {
-        const [prayerHour, prayerMinute] = time.split(':').map(Number);
+        const [prayerHour, prayerMinute] = time.split(":").map(Number);
 
         if (currentTime.getHours() === prayerHour && currentTime.getMinutes() === prayerMinute) {
-          if (prayer === 'Fajr') {
-            playAudio('Fajr');
+          if (prayer === "Fajr") {
+            playAudio("Fajr");
           } else {
-            playAudio('Normal');
+            playAudio("Normal");
           }
           break;
         }
