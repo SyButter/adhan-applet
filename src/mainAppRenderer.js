@@ -13,25 +13,6 @@ const configHelper = new ConfigHelper();
 let selectedReciter = ""; // Variable to store the selected reciter
 let prayerTimings = {}; // Store fetched prayer timings
 
-
-// Example usage of configuration helper methods
-(async () => {
-  // Get a configuration value
-  const zipcode = await configHelper.getConfigValue("ZIPCODE");
-  console.log("Current Zipcode:", zipcode);
-
-  // Set a configuration value
-  await configHelper.setConfigValue("ZIPCODE", "67890");
-  console.log("Updated Zipcode to 67890");
-
-  // List all configuration values
-  const configList = await configHelper.listAllConfigValues();
-  console.log("Configuration values:", configList);
-
-  // Delete a configuration key
-  await configHelper.deleteConfigValue("METHOD");
-  console.log("Deleted configuration key: METHOD");
-})();
 // Function to populate reciter dropdown
 async function populateReciterDropdown() {
   const reciters = await ipcRenderer.invoke("get-reciter-list");
@@ -115,15 +96,43 @@ async function getPrayerTimes() {
   }
 }
 
-// Initialize the fields with config values on page load
 async function initializeConfigFields() {
   const config = await configHelper.getConfigObject();
 
+  // Check if the config values are being retrieved correctly
+  console.log("Configuration values from file:", config);
+
+  // Set the input field values to stored configuration values, if they exist
   document.getElementById("zipcode").value = config.ZIPCODE || "";
   document.getElementById("method").value = config.METHOD || "ISNA";
   document.getElementById("time-format").value = config.TIME_FORMAT || "24-hour";
+  document.getElementById("reciter-dropdown").value = config.RECITER || "";
+
+  // Set prayer timing offsets
+  document.getElementById("fajr-offset").value = config.FAJR_OFFSET || 0;
+  document.getElementById("dhuhr-offset").value = config.DHUHR_OFFSET || 0;
+  document.getElementById("asr-offset").value = config.ASR_OFFSET || 0;
+  document.getElementById("maghrib-offset").value = config.MAGHRIB_OFFSET || 0;
+  document.getElementById("isha-offset").value = config.ISHA_OFFSET || 0;
+
+  // Set angle settings
   document.getElementById("fajr-angle").value = config.FAJR_ANGLE || 18;
   document.getElementById("isha-angle").value = config.ISHA_ANGLE || 18;
+
+  // Debug logs for the values being set
+  console.log("Populating input fields with config values:", {
+    "ZIPCODE": config.ZIPCODE,
+    "METHOD": config.METHOD,
+    "TIME_FORMAT": config.TIME_FORMAT,
+    "RECITER": config.RECITER,
+    "FAJR_OFFSET": config.FAJR_OFFSET,
+    "DHUHR_OFFSET": config.DHUHR_OFFSET,
+    "ASR_OFFSET": config.ASR_OFFSET,
+    "MAGHRIB_OFFSET": config.MAGHRIB_OFFSET,
+    "ISHA_OFFSET": config.ISHA_OFFSET,
+    "FAJR_ANGLE": config.FAJR_ANGLE,
+    "ISHA_ANGLE": config.ISHA_ANGLE,
+  });
 }
 
 // Event listener for dropdown changes
