@@ -1,6 +1,14 @@
 const { app, BrowserWindow, dialog, ipcMain } = require("electron");
 const path = require("path");
 const fs = require("fs");
+const ConfigHelper = require("./utils/configHelper");
+
+// Create a new instance of ConfigHelper
+const configHelper = new ConfigHelper(); // Optionally pass the path to config.env
+
+// Load configuration on startup
+configHelper.loadConfig();
+configHelper.setupIPCHandlers(); // Set up IPC handlers
 
 function createWindow() {
   const mainWindow = new BrowserWindow({

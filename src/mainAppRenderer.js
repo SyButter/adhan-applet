@@ -1,16 +1,37 @@
 const { ipcRenderer } = require("electron");
 const PrayerTimesHelper = require("../src/utils/prayerTimesHelper");
 const AudioHelper = require("../src/utils/audioHelper");
-const ErrorHandler = require("../src/utils/errorHandler"); // Import ErrorHandler
+const ErrorHandler = require("../src/utils/errorHandler");
+const ConfigHelper = require("../src/utils/configHelper.js");
 
 // Create instances of the helper classes
 const prayerTimesHelper = new PrayerTimesHelper();
 const audioHelper = new AudioHelper();
 const generalHelpers = new ErrorHandler();
+const configHelper = new ConfigHelper();
 
 let selectedReciter = ""; // Variable to store the selected reciter
 let prayerTimings = {}; // Store fetched prayer timings
 
+
+// Example usage of configuration helper methods
+(async () => {
+  // Get a configuration value
+  const zipcode = await configHelper.getConfigValue("ZIPCODE");
+  console.log("Current Zipcode:", zipcode);
+
+  // Set a configuration value
+  await configHelper.setConfigValue("ZIPCODE", "67890");
+  console.log("Updated Zipcode to 67890");
+
+  // List all configuration values
+  const configList = await configHelper.listAllConfigValues();
+  console.log("Configuration values:", configList);
+
+  // Delete a configuration key
+  await configHelper.deleteConfigValue("METHOD");
+  console.log("Deleted configuration key: METHOD");
+})();
 // Function to populate reciter dropdown
 async function populateReciterDropdown() {
   const reciters = await ipcRenderer.invoke("get-reciter-list");
