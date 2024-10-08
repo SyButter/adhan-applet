@@ -5,8 +5,10 @@ const dotenv = require("dotenv");
 const { ipcMain, ipcRenderer } = require("electron") || {}; // Conditional require to work in both main and renderer
 
 class ConfigHelper {
-  constructor(configFilePath = "../config.env") {
+    constructor(configFilePath = "../../config.env") {
     this.configFilePath = path.resolve(__dirname, configFilePath);
+    console.log("Checking if config file exists at:", this.configFilePath);
+    console.log("Current directory:", __dirname);
   }
 
   // Load the config.env file
@@ -87,6 +89,22 @@ class ConfigHelper {
       this.deleteConfig(key);
       return true;
     });
+  }
+
+  // Return a consolidated configuration object
+  async getConfigObject() {
+    return {
+      ZIPCODE: await this.getConfigValue("ZIPCODE"),
+      METHOD: await this.getConfigValue("METHOD"),
+      TIME_FORMAT: await this.getConfigValue("TIME_FORMAT"),
+      FAJR_OFFSET: parseInt(await this.getConfigValue("FAJR_OFFSET"), 10) || 0,
+      DHUHR_OFFSET: parseInt(await this.getConfigValue("DHUHR_OFFSET"), 10) || 0,
+      ASR_OFFSET: parseInt(await this.getConfigValue("ASR_OFFSET"), 10) || 0,
+      MAGHRIB_OFFSET: parseInt(await this.getConfigValue("MAGHRIB_OFFSET"), 10) || 0,
+      ISHA_OFFSET: parseInt(await this.getConfigValue("ISHA_OFFSET"), 10) || 0,
+      FAJR_ANGLE: parseFloat(await this.getConfigValue("FAJR_ANGLE")) || 18,
+      ISHA_ANGLE: parseFloat(await this.getConfigValue("ISHA_ANGLE")) || 18,
+    };
   }
 
   // Renderer-specific methods (use ipcRenderer)

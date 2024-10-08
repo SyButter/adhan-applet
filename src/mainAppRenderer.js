@@ -48,47 +48,57 @@ async function populateReciterDropdown() {
   selectedReciter = reciterDropdown.value;
 }
 
-// Function to get user input and fetch prayer times
 async function getPrayerTimes() {
   try {
-    const zipcode = document.getElementById("zipcode").value.trim();
-    if (!zipcode){
+    // Retrieve the consolidated configuration object from ConfigHelper
+    const config = await configHelper.getConfigObject();
+
+    // Check if a ZIPCODE is present in the config or the input field
+    const zipcode = document.getElementById("zipcode").value.trim() || config.ZIPCODE;
+    if (!zipcode) {
       generalHelpers.showError("PLEASE ENTER A ZIPCODE");
       return;
     }
-    const method = document.getElementById("method").value || "ISNA";
-    const timeFormat = document.getElementById("time-format").value || "24-hour";
 
-    // Get offsets from the input fields
+    // Use either the config object values or the input field values
+    const method = document.getElementById("method").value || config.METHOD;
+    const timeFormat = document.getElementById("time-format").value || config.TIME_FORMAT;
+
+    // Prepare offsets from config values or default values
     const offsets = {
-      Fajr: parseInt(document.getElementById("fajr-offset").value, 10),
-      Dhuhr: parseInt(document.getElementById("dhuhr-offset").value, 10),
-      Asr: parseInt(document.getElementById("asr-offset").value, 10),
-      Maghrib: parseInt(document.getElementById("maghrib-offset").value, 10),
-      Isha: parseInt(document.getElementById("isha-offset").value, 10),
+      Fajr: parseInt(document.getElementById("fajr-offset").value, 10) || config.FAJR_OFFSET,
+      Dhuhr: parseInt(document.getElementById("dhuhr-offset").value, 10) || config.DHUHR_OFFSET,
+      Asr: parseInt(document.getElementById("asr-offset").value, 10) || config.ASR_OFFSET,
+      Maghrib: parseInt(document.getElementById("maghrib-offset").value, 10) || config.MAGHRIB_OFFSET,
+      Isha: parseInt(document.getElementById("isha-offset").value, 10) || config.ISHA_OFFSET,
     };
 
-    // Get Fajr and Isha angle values
-    let fajrAngle = document.getElementById("fajr-angle").value;
-    let ishaAngle = document.getElementById("isha-angle").value;
+    // Use custom or stored angles
+    let fajrAngle = document.getElementById("fajr-angle").value || config.FAJR_ANGLE;
+    let ishaAngle = document.getElementById("isha-angle").value || config.ISHA_ANGLE;
 
-    // Check for custom angle values
     if (fajrAngle === "custom") {
-      fajrAngle = parseFloat(document.getElementById("fajr-angle-custom").value);
+      fajrAngle = parseFloat(document.getElementById("fajr-angle-custom").value) || config.FAJR_ANGLE;
     }
     if (ishaAngle === "custom") {
-      ishaAngle = parseFloat(document.getElementById("isha-angle-custom").value);
+      ishaAngle = parseFloat(document.getElementById("isha-angle-custom").value) || config.ISHA_ANGLE;
     }
 
-    // Prepare config with angles if provided
-    const config = {
+    // Update the config object with any newly entered values
+    const finalConfig = {
       method,
       fajrAngle: isNaN(fajrAngle) ? undefined : fajrAngle,
       ishaAngle: isNaN(ishaAngle) ? undefined : ishaAngle,
     };
 
     // Get the formatted prayer times using the PrayerTimesHelper class
-    const timings = await prayerTimesHelper.getFormattedPrayerTimes(zipcode, method, timeFormat, offsets, config);
+    const timings = await prayerTimesHelper.getFormattedPrayerTimes(
+      zipcode,
+      method,
+      timeFormat,
+      offsets,
+      finalConfig
+    );
     console.log("Received Prayer Times:", timings);
 
     prayerTimings = timings;
@@ -105,6 +115,17 @@ async function getPrayerTimes() {
   }
 }
 
+// Initialize the fields with config values on page load
+async function initializeConfigFields() {
+  const config = await configHelper.getConfigObject();
+
+  document.getElementById("zipcode").value = config.ZIPCODE || "";
+  document.getElementById("method").value = config.METHOD || "ISNA";
+  document.getElementById("time-format").value = config.TIME_FORMAT || "24-hour";
+  document.getElementById("fajr-angle").value = config.FAJR_ANGLE || 18;
+  document.getElementById("isha-angle").value = config.ISHA_ANGLE || 18;
+}
+
 // Event listener for dropdown changes
 document.getElementById("reciter-dropdown").addEventListener("change", (event) => {
   selectedReciter = event.target.value;
@@ -112,6 +133,7 @@ document.getElementById("reciter-dropdown").addEventListener("change", (event) =
 
 // Populate reciter dropdown on page load
 populateReciterDropdown();
-
+// Call initializeConfigFields on page load
+initializeConfigFields();
 // Event listener for "Get Prayer Times" button
 document.getElementById("get-prayer-times-button").addEventListener("click", getPrayerTimes);
