@@ -1,7 +1,7 @@
 const { ipcRenderer } = require("electron");
 const PrayerTimesHelper = require("../src/utils/prayerTimesHelper");
 const AudioHelper = require("../src/utils/audioHelper");
-const ErrorHandler = require("../src/utils/ErrorHandler"); // Import ErrorHandler
+const ErrorHandler = require("../src/utils/errorHandler"); // Import ErrorHandler
 
 // Create instances of the helper classes
 const prayerTimesHelper = new PrayerTimesHelper();

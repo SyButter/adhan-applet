@@ -1,8 +1,8 @@
-const path = require('path');
+const path = require("path");
 
 class AudioHelper {
   constructor() {
-    this.audioFolderPath = path.join(__dirname, '../../assets/adhans'); // Default path to the adhans folder
+    this.audioFolderPath = path.join(__dirname, "../../assets/adhans"); // Default path to the adhans folder
   }
 
   /**
@@ -20,7 +20,7 @@ class AudioHelper {
    */
   playAudio(prayer, selectedReciter) {
     const audio = new Audio();
-    const audioFile = prayer === 'Fajr' ? 'fajr.mp3' : 'normal.mp3';
+    const audioFile = prayer === "Fajr" ? "fajr.mp3" : "normal.mp3";
     const filePath = path.join(this.audioFolderPath, selectedReciter, audioFile);
     audio.src = filePath;
     audio.play();
