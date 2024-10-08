@@ -42,12 +42,10 @@
 
         <!-- Calculation Method Dropdown -->
         <label for="method">Calculation Method:</label>
-        <select id="method">
-            <option value="ISNA">ISNA</option>
-            <option value="Umm al-Qura">Umm al-Qura</option>
-            <option value="Egypt">Egypt</option>
-            <option value="Custom">Custom</option> <!-- Custom option added -->
-        </select>
+        <select id="method-dropdown">
+            <option value="">Select a Calculation Method</option>
+          </select>
+          
         <br>
 
         <!-- Time Format Dropdown -->
@@ -119,40 +117,60 @@
 
     <script src="../src/mainAppRenderer.js"></script>
     <script>
-        // Collapsible dropdown functionality
-        const coll = document.querySelector('.collapsible');
-        const offsetSettings = document.getElementById('offset-settings');
-
-        coll.addEventListener('click', function() {
-            this.classList.toggle('active');
-            offsetSettings.style.display = offsetSettings.style.display === "block" ? "none" : "block";
-        });
-
-        // Show or hide offset and angle settings based on method selection
-        const methodSelect = document.getElementById('method');
-        methodSelect.addEventListener('change', function() {
-            if (methodSelect.value === 'Custom') {
+        // Wait for the DOM to be fully loaded before running the script
+        document.addEventListener("DOMContentLoaded", () => {
+          // Get the collapsible button and offset settings section
+          const coll = document.querySelector('.collapsible');
+          const offsetSettings = document.getElementById('offset-settings');
+      
+          // Check if elements exist before adding event listeners
+          if (coll && offsetSettings) {
+            coll.addEventListener('click', function() {
+              this.classList.toggle('active');
+              offsetSettings.style.display = offsetSettings.style.display === "block" ? "none" : "block";
+            });
+          } else {
+            console.error("Collapsible button or offset settings section not found.");
+          }
+      
+          // Handle method selection change
+          const methodSelect = document.getElementById('method-dropdown');
+          if (methodSelect) {
+            methodSelect.addEventListener('change', function() {
+              if (methodSelect.value === 'Custom') {
                 offsetSettings.style.display = 'block'; // Show offsets and angle settings
                 coll.classList.add('active');
-            } else {
+              } else {
                 offsetSettings.style.display = 'none'; // Hide offsets and angle settings
                 coll.classList.remove('active');
-            }
+              }
+            });
+          } else {
+            console.error("Method dropdown not found.");
+          }
+      
+          // Handle custom angle inputs for Fajr and Isha
+          const fajrAngleSelect = document.getElementById('fajr-angle');
+          const ishaAngleSelect = document.getElementById('isha-angle');
+          const fajrCustomInput = document.getElementById('fajr-angle-custom');
+          const ishaCustomInput = document.getElementById('isha-angle-custom');
+      
+          if (fajrAngleSelect && fajrCustomInput) {
+            fajrAngleSelect.addEventListener('change', function() {
+              fajrCustomInput.style.display = this.value === 'custom' ? 'inline' : 'none';
+            });
+          } else {
+            console.error("Fajr angle dropdown or custom input not found.");
+          }
+      
+          if (ishaAngleSelect && ishaCustomInput) {
+            ishaAngleSelect.addEventListener('change', function() {
+              ishaCustomInput.style.display = this.value === 'custom' ? 'inline' : 'none';
+            });
+          } else {
+            console.error("Isha angle dropdown or custom input not found.");
+          }
         });
-
-        // Handle custom angle inputs
-        const fajrAngleSelect = document.getElementById('fajr-angle');
-        const ishaAngleSelect = document.getElementById('isha-angle');
-        const fajrCustomInput = document.getElementById('fajr-angle-custom');
-        const ishaCustomInput = document.getElementById('isha-angle-custom');
-
-        fajrAngleSelect.addEventListener('change', function() {
-            fajrCustomInput.style.display = this.value === 'custom' ? 'inline' : 'none';
-        });
-
-        ishaAngleSelect.addEventListener('change', function() {
-            ishaCustomInput.style.display = this.value === 'custom' ? 'inline' : 'none';
-        });
-    </script>
+      </script>      
 </body>
 </html>
